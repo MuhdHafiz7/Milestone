@@ -23,6 +23,9 @@ jobs:
         run: npm install
 
       - name: Build Vite Web App
+        env:
+          VITE_NHOST_SUBDOMAIN: "vklvksbgvbbjaohkweae"
+          VITE_NHOST_REGION: "ap-southeast-1"
         run: npm run build
 
       - name: Set up JDK 17 (Required for Android)
