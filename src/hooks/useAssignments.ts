@@ -1,41 +1,104 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { createClient } from 'graphql-ws'
 import { useEffect } from 'react'
 
-import { assertSupabase, supabase } from '@/services/supabase'
+import { assertNhost, nhost } from '@/services/nhost'
 import type { Assignment, AssignmentInput, AssignmentStatus } from '@/types/assignment'
 
 const queryKey = ['assignments']
 
+const ASSIGNMENTS_QUERY = `
+  query GetAssignments {
+    assignments(order_by: { due_date: asc }) {
+      id
+      assignment_name
+      subject
+      due_date
+      priority
+      status
+    }
+  }
+`
+
+const ASSIGNMENTS_SUBSCRIPTION = `
+  subscription GetAssignments {
+    assignments(order_by: { due_date: asc }) {
+      id
+      assignment_name
+      subject
+      due_date
+      priority
+      status
+    }
+  }
+`
+
+const CREATE_MUTATION = `
+  mutation CreateAssignment($object: assignments_insert_input!) {
+    insert_assignments_one(object: $object) {
+      id
+    }
+  }
+`
+
+const UPDATE_MUTATION = `
+  mutation UpdateAssignment($id: uuid!, $object: assignments_set_input!) {
+    update_assignments_by_pk(pk_columns: { id: $id }, _set: $object) {
+      id
+    }
+  }
+`
+
+const DELETE_MUTATION = `
+  mutation DeleteAssignment($id: uuid!) {
+    delete_assignments_by_pk(id: $id) {
+      id
+    }
+  }
+`
+
+const UPDATE_STATUS_MUTATION = `
+  mutation UpdateStatus($id: uuid!, $status: String!) {
+    update_assignments_by_pk(pk_columns: { id: $id }, _set: { status: $status }) {
+      id
+    }
+  }
+`
+
 async function fetchAssignments() {
-  const client = assertSupabase()
-  const { data, error } = await client
-    .from('assignments')
-    .select('*')
-    .order('due_date', { ascending: true })
-
+  const client = assertNhost()
+  const { data, error } = await client.graphql.request(ASSIGNMENTS_QUERY)
   if (error) throw error
-
-  return data as Assignment[]
+  return data.assignments as Assignment[]
 }
 
 export function useAssignments() {
   const queryClient = useQueryClient()
 
   useEffect(() => {
-    const client = supabase
+    const client = nhost
     if (!client) return
 
-    const channel = client
-      .channel('assignments-realtime')
-      .on(
-        'postgres_changes',
-        { event: '*', schema: 'public', table: 'assignments' },
-        () => void queryClient.invalidateQueries({ queryKey }),
-      )
-      .subscribe()
+    const wsClient = createClient({ url: client.graphql.wsUrl })
+
+    const unsubscribe = wsClient.subscribe(
+      { query: ASSIGNMENTS_SUBSCRIPTION },
+      {
+        next() {
+          void queryClient.invalidateQueries({ queryKey })
+        },
+        error(err: unknown) {
+          console.error('Nhost subscription error:', err)
+        },
+        complete() {
+          // subscription completed
+        },
+      },
+    )
 
     return () => {
-      void client.removeChannel(channel)
+      unsubscribe()
+      wsClient.dispose()
     }
   }, [queryClient])
 
@@ -46,13 +109,15 @@ export function useAssignments() {
 
   const createAssignment = useMutation({
     mutationFn: async (input: AssignmentInput) => {
-      const client = assertSupabase()
-      const payload = {
-        ...input,
-        lecturer: input.lecturer?.trim() || null,
-        remarks: input.remarks?.trim() || null,
+      const client = assertNhost()
+      const object = {
+        assignment_name: input.assignment_name,
+        subject: input.subject,
+        due_date: input.due_date,
+        priority: input.priority,
+        status: input.status,
       }
-      const { error } = await client.from('assignments').insert(payload)
+      const { error } = await client.graphql.request(CREATE_MUTATION, { object })
       if (error) throw error
     },
     onSuccess: () => void queryClient.invalidateQueries({ queryKey }),
@@ -60,13 +125,15 @@ export function useAssignments() {
 
   const updateAssignment = useMutation({
     mutationFn: async ({ id, input }: { id: string; input: AssignmentInput }) => {
-      const client = assertSupabase()
-      const payload = {
-        ...input,
-        lecturer: input.lecturer?.trim() || null,
-        remarks: input.remarks?.trim() || null,
+      const client = assertNhost()
+      const object = {
+        assignment_name: input.assignment_name,
+        subject: input.subject,
+        due_date: input.due_date,
+        priority: input.priority,
+        status: input.status,
       }
-      const { error } = await client.from('assignments').update(payload).eq('id', id)
+      const { error } = await client.graphql.request(UPDATE_MUTATION, { id, object })
       if (error) throw error
     },
     onSuccess: () => void queryClient.invalidateQueries({ queryKey }),
@@ -74,8 +141,8 @@ export function useAssignments() {
 
   const deleteAssignment = useMutation({
     mutationFn: async (id: string) => {
-      const client = assertSupabase()
-      const { error } = await client.from('assignments').delete().eq('id', id)
+      const client = assertNhost()
+      const { error } = await client.graphql.request(DELETE_MUTATION, { id })
       if (error) throw error
     },
     onSuccess: () => void queryClient.invalidateQueries({ queryKey }),
@@ -83,8 +150,8 @@ export function useAssignments() {
 
   const updateStatus = useMutation({
     mutationFn: async ({ id, status }: { id: string; status: AssignmentStatus }) => {
-      const client = assertSupabase()
-      const { error } = await client.from('assignments').update({ status }).eq('id', id)
+      const client = assertNhost()
+      const { error } = await client.graphql.request(UPDATE_STATUS_MUTATION, { id, status })
       if (error) throw error
     },
     onSuccess: () => void queryClient.invalidateQueries({ queryKey }),

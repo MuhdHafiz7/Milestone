@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Milestone</string>
+    <string name="title_activity_main">Milestone</string>
+    <string name="package_name">com.hafiz.milestone</string>
+    <string name="custom_url_scheme">com.hafiz.milestone</string>
+</resources>

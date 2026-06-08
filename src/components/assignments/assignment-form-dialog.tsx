@@ -18,11 +18,9 @@ interface AssignmentFormDialogProps {
 const emptyState: AssignmentInput = {
   assignment_name: '',
   subject: '',
-  lecturer: '',
   due_date: '',
   priority: 'Medium',
   status: 'Pending',
-  remarks: '',
 }
 
 function formatForDateTimeInput(isoDate: string) {
@@ -42,11 +40,9 @@ export function AssignmentFormDialog({
       ? {
           assignment_name: initialData.assignment_name,
           subject: initialData.subject,
-          lecturer: initialData.lecturer ?? '',
           due_date: formatForDateTimeInput(initialData.due_date),
           priority: initialData.priority,
           status: initialData.status,
-          remarks: initialData.remarks ?? '',
         }
       : emptyState,
   )
@@ -97,11 +93,6 @@ export function AssignmentFormDialog({
           </div>
 
           <div className="space-y-1">
-            <label className="text-sm font-medium text-slate-700">Lecturer</label>
-            <Input value={formState.lecturer} onChange={(event) => updateField('lecturer', event.target.value)} />
-          </div>
-
-          <div className="space-y-1">
             <label className="text-sm font-medium text-slate-700">Due Date *</label>
             <Input
               type="datetime-local"
@@ -135,16 +126,7 @@ export function AssignmentFormDialog({
               </Select>
             </div>
           </div>
-
-          <div className="space-y-1">
-            <label className="text-sm font-medium text-slate-700">Remarks</label>
-            <Textarea
-              rows={3}
-              value={formState.remarks}
-              onChange={(event) => updateField('remarks', event.target.value)}
-            />
-          </div>
-
+          
           {error ? <p className="text-sm text-red-600">{error}</p> : null}
 
           <div className="flex justify-end gap-2">

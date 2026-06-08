@@ -100,11 +100,9 @@ export function AssignmentTable({ assignments, loading, onEdit, onDelete, onStat
             <tr>
               <th className="px-3 py-2">Assignment Name</th>
               <th className="px-3 py-2">Subject</th>
-              <th className="px-3 py-2">Lecturer</th>
               <th className="px-3 py-2">Due Date</th>
               <th className="px-3 py-2">Priority</th>
               <th className="px-3 py-2">Status</th>
-              <th className="px-3 py-2">Remarks</th>
               <th className="px-3 py-2">Actions</th>
             </tr>
           </thead>
@@ -116,7 +114,6 @@ export function AssignmentTable({ assignments, loading, onEdit, onDelete, onStat
                   <tr key={assignment.id} className={overdue ? 'bg-red-50/60' : 'border-t border-slate-100'}>
                     <td className="px-3 py-2 font-medium text-slate-800">{assignment.assignment_name}</td>
                     <td className="px-3 py-2">{assignment.subject}</td>
-                    <td className="px-3 py-2">{assignment.lecturer ?? '-'}</td>
                     <td className="px-3 py-2">
                       {format(new Date(assignment.due_date), 'dd MMM yyyy, HH:mm')}
                       {overdue ? <Badge className="ml-2" variant="red">Overdue</Badge> : null}
@@ -148,7 +145,6 @@ export function AssignmentTable({ assignments, loading, onEdit, onDelete, onStat
                         </Select>
                       </div>
                     </td>
-                    <td className="max-w-xs px-3 py-2 text-slate-600">{assignment.remarks ?? '-'}</td>
                     <td className="px-3 py-2">
                       <div className="flex gap-2">
                         <Button size="sm" variant="outline" onClick={() => onEdit(assignment)}>
