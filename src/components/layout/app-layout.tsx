@@ -5,7 +5,7 @@ import { Sidebar } from '@/components/layout/sidebar'
 import { TopNav } from '@/components/layout/top-nav'
 import { MobileNav } from '@/components/layout/mobile-nav'
 import { Button } from '@/components/ui/button'
-import { ChevronLeft, ChevronRight, LayoutDashboard } from 'lucide-react'
+import { ChevronLeft, ChevronRight } from 'lucide-react'
 
 export function AppLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(true)
@@ -20,13 +20,6 @@ export function AppLayout() {
         </main>
       </div>
       <MobileNav />
-      <Button
-        onClick={() => setSidebarOpen(!sidebarOpen)}
-        className="fixed bottom-24 right-6 z-50 rounded-full shadow-lg lg:hidden"
-        aria-label={sidebarOpen ? 'Hide sidebar' : 'Show sidebar'}
-      >
-        {sidebarOpen ? <ChevronLeft className="h-5 w-5" /> : <LayoutDashboard className="h-5 w-5" />}
-      </Button>
       <Button
         onClick={() => setSidebarOpen(!sidebarOpen)}
         className="fixed bottom-24 left-6 z-50 rounded-full shadow-lg hidden lg:flex"
