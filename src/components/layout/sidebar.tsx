@@ -20,7 +20,7 @@ export function Sidebar({ isOpen }: SidebarProps) {
   return (
     <aside
       className={cn(
-        'transition-all duration-300 bg-white border-slate-200 overflow-hidden',
+        'transition-all duration-300 bg-white border-slate-200 overflow-hidden hidden lg:flex',
         isOpen
           ? 'lg:w-64 lg:border-r'
           : 'lg:w-16 lg:border-r',
