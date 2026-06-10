@@ -6,11 +6,11 @@ interface SummaryCardsProps {
 }
 
 const cardItems: Array<{ key: keyof AssignmentSummary; title: string }> = [
-  { key: 'total', title: 'Total Assignments' },
-  { key: 'pending', title: 'Pending Assignments' },
-  { key: 'inProgress', title: 'In Progress Assignments' },
-  { key: 'completed', title: 'Completed Assignments' },
-  { key: 'overdue', title: 'Overdue Assignments' },
+  { key: 'total', title: 'Total' },
+  { key: 'pending', title: 'Pending' },
+  { key: 'inProgress', title: 'In Progress' },
+  { key: 'completed', title: 'Completed' },
+  { key: 'overdue', title: 'Overdue' },
 ]
 
 export function SummaryCards({ summary }: SummaryCardsProps) {

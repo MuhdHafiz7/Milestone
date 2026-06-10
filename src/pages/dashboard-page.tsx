@@ -1,6 +1,5 @@
 import { endOfWeek, format, isWithinInterval, startOfDay } from 'date-fns'
 
-import { SummaryCards } from '@/components/assignments/summary-cards'
 import { StatusBadge } from '@/components/assignments/status-badge'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -18,28 +17,33 @@ export function DashboardPage() {
     )
   }
 
-  const summary = getSummary(assignments)
-  const upcoming = [...assignments]
+  // Filter out Final Exams
+  const regularAssignments = assignments.filter(a => a.assignment_name !== 'Final Exam')
+
+  const summary = getSummary(regularAssignments)
+  const upcoming = [...regularAssignments]
     .filter((assignment) => !isOverdue(assignment))
     .sort((left, right) => new Date(left.due_date).getTime() - new Date(right.due_date).getTime())
     .slice(0, 5)
 
-  const dueToday = assignments.filter(
+  const dueToday = regularAssignments.filter(
     (assignment) => format(new Date(assignment.due_date), 'yyyy-MM-dd') === format(new Date(), 'yyyy-MM-dd'),
   )
 
   const now = new Date()
-  const dueThisWeek = assignments.filter((assignment) =>
+  const dueThisWeek = regularAssignments.filter((assignment) =>
     isWithinInterval(new Date(assignment.due_date), {
       start: startOfDay(now),
       end: endOfWeek(now, { weekStartsOn: 1 }),
     }),
   )
 
+  // Final Exams
+  const finalExams = assignments.filter(a => a.assignment_name === 'Final Exam')
+    .sort((left, right) => new Date(left.due_date).getTime() - new Date(right.due_date).getTime())
+
   return (
     <div className="space-y-4">
-      <SummaryCards summary={summary} />
-
       {isLoading ? <p className="text-sm text-slate-500">Loading dashboard...</p> : null}
 
       <div className="grid gap-4 xl:grid-cols-3">
@@ -53,7 +57,7 @@ export function DashboardPage() {
                 <div key={assignment.id} className="rounded border border-slate-100 p-3">
                   <p className="font-medium text-slate-800">{assignment.assignment_name}</p>
                   <p className="text-xs text-slate-500">
-                    {assignment.subject} • {format(new Date(assignment.due_date), 'dd MMM yyyy, HH:mm')}
+                    {assignment.subject?.name ?? ''} • {format(new Date(assignment.due_date), 'dd MMM yyyy, HH:mm')}
                   </p>
                   <div className="mt-2 flex items-center gap-2">
                     <StatusBadge status={assignment.status} />
@@ -78,7 +82,7 @@ export function DashboardPage() {
               dueToday.map((assignment) => (
                 <div key={assignment.id} className="rounded border border-amber-200 bg-amber-50 p-3">
                   <p className="font-medium text-slate-800">{assignment.assignment_name}</p>
-                  <p className="text-xs text-slate-600">{assignment.subject}</p>
+                  <p className="text-xs text-slate-600">{assignment.subject?.name ?? ''}</p>
                 </div>
               ))
             ) : (
@@ -105,6 +109,26 @@ export function DashboardPage() {
           </CardContent>
         </Card>
       </div>
+
+      <Card className="xl:col-span-3">
+        <CardHeader>
+          <CardTitle className="text-red-600">Final Exams</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-2">
+          {finalExams.length ? (
+            finalExams.map((exam) => (
+              <div key={exam.id} className="rounded border border-red-200 bg-red-50 p-3">
+                <p className="font-medium text-red-800">{exam.subject?.name ?? ''} Final Exam</p>
+                <p className="text-xs text-red-600">
+                  Starts: {format(new Date(exam.due_date), 'dd MMM yyyy, HH:mm')}
+                </p>
+              </div>
+            ))
+          ) : (
+            <p className="text-sm text-slate-500">No final exams scheduled.</p>
+          )}
+        </CardContent>
+      </Card>
     </div>
   )
 }

@@ -1,4 +1,4 @@
-# Assignment Due Date Tracker
+# Milestone
 
 A modern shared assignment board for students to manage deadlines with realtime updates powered by Nhost.
 

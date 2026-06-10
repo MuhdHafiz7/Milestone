@@ -22,11 +22,14 @@ export function AnalyticsPage() {
     )
   }
 
-  const statusData = Object.entries(byStatus(assignments)).map(([name, value]) => ({ name, value }))
-  const subjectData = groupBySubject(assignments)
-  const monthData = dueInMonth(assignments)
+  // Filter out Final Exams
+  const regularAssignments = assignments.filter(a => a.assignment_name !== 'Final Exam')
 
-  if (!assignments.length) {
+  const statusData = Object.entries(byStatus(regularAssignments)).map(([name, value]) => ({ name, value }))
+  const subjectData = groupBySubject(regularAssignments)
+  const monthData = dueInMonth(regularAssignments)
+
+  if (!regularAssignments.length) {
     return (
       <Card>
         <CardContent className="pt-4 text-sm text-slate-500">No assignments yet. Add data to view analytics.</CardContent>

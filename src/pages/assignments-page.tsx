@@ -9,7 +9,7 @@ import { useAssignments } from '@/hooks/useAssignments'
 import type { Assignment, AssignmentInput, AssignmentStatus } from '@/types/assignment'
 
 export function AssignmentsPage() {
-  const { data: assignments = [], isLoading, error, createAssignment, updateAssignment, deleteAssignment, updateStatus } =
+  const { data: assignments = [], isLoading, error, createAssignment, updateAssignment, deleteAssignment, updateStatus, subjects } =
     useAssignments()
 
   const [open, setOpen] = useState(false)
@@ -77,6 +77,7 @@ export function AssignmentsPage() {
           initialData={selected}
           onSubmit={handleSubmit}
           pending={createAssignment.isPending || updateAssignment.isPending}
+          subjects={subjects}
         />
       ) : null}
     </div>

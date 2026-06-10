@@ -65,7 +65,8 @@ export function byStatus(assignments: Assignment[]): Record<AssignmentStatus | '
 
 export function groupBySubject(assignments: Assignment[]): Array<{ subject: string; value: number }> {
   const subjectMap = assignments.reduce<Record<string, number>>((accumulator, assignment) => {
-    accumulator[assignment.subject] = (accumulator[assignment.subject] ?? 0) + 1
+    const name = assignment.subject?.name ?? 'Unknown'
+    accumulator[name] = (accumulator[name] ?? 0) + 1
     return accumulator
   }, {})
 
