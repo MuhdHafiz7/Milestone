@@ -22,7 +22,7 @@ export function DashboardPage() {
 
   const summary = getSummary(regularAssignments)
   const upcoming = [...regularAssignments]
-    .filter((assignment) => !isOverdue(assignment))
+    .filter((assignment) => !isOverdue(assignment) && assignment.status !== 'Completed')
     .sort((left, right) => new Date(left.due_date).getTime() - new Date(right.due_date).getTime())
     .slice(0, 5)
 
@@ -46,7 +46,7 @@ export function DashboardPage() {
     <div className="space-y-4">
       {isLoading ? <p className="text-sm text-slate-500">Loading dashboard...</p> : null}
 
-      <div className="grid gap-4 xl:grid-cols-3">
+      <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 xl:grid-cols-3">
         <Card>
           <CardHeader>
             <CardTitle>Upcoming Deadlines</CardTitle>

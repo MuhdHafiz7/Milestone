@@ -98,7 +98,7 @@ export function AssignmentTable({ assignments, loading, onEdit, onDelete, onStat
 
       <TableContainer>
         <Table>
-          <thead className="bg-slate-50 text-left text-xs uppercase tracking-wide text-slate-500">
+          <thead className="bg-slate-50 text-left text-xs uppercase tracking-wide text-slate-500 hidden md:table-header-group">
             <tr>
               <th className="px-3 py-2">Assignment</th>
               <th className="px-3 py-2">Subject</th>
@@ -115,12 +115,12 @@ export function AssignmentTable({ assignments, loading, onEdit, onDelete, onStat
                 return (
                   <tr key={assignment.id} className={overdue ? 'bg-red-50/60' : 'border-t border-slate-100'}>
                     <td className="px-3 py-2 font-medium text-slate-800">{assignment.assignment_name}</td>
-                    <td className="px-3 py-2">{assignment.subject?.name ?? ''}</td>
-                    <td className="px-3 py-2">
+                    <td className="hidden md:table-cell px-3 py-2">{assignment.subject?.name ?? ''}</td>
+                    <td className="hidden md:table-cell px-3 py-2">
                       {format(new Date(assignment.due_date), 'dd MMM yyyy, HH:mm')}
                       {overdue ? <Badge className="ml-2" variant="red">Overdue</Badge> : null}
                     </td>
-                    <td className="px-3 py-2">
+                    <td className="hidden md:table-cell px-3 py-2">
                       <Badge
                         variant={
                           assignment.priority === 'High'
@@ -133,7 +133,7 @@ export function AssignmentTable({ assignments, loading, onEdit, onDelete, onStat
                         {assignment.priority}
                       </Badge>
                     </td>
-                    <td className="px-3 py-2">
+                    <td className="hidden md:table-cell px-3 py-2">
                       <div className="space-y-2">
                         <StatusBadge status={assignment.status} />
                         <Select
@@ -184,7 +184,7 @@ export function AssignmentTable({ assignments, loading, onEdit, onDelete, onStat
               })
             ) : (
               <tr>
-                <td className="px-3 py-6 text-center text-sm text-slate-500" colSpan={8}>
+                <td className="px-3 py-6 text-center text-sm text-slate-500" colSpan={6}>
                   No assignments found. Create one to get started.
                 </td>
               </tr>
